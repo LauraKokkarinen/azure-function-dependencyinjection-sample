@@ -34,7 +34,7 @@ namespace AzureFunctionsMemoryCache
                 // If you want, you can specify and get the cache duration from app settings
                 int.TryParse(_configuration["CacheDurationMinutes"], out int cacheDuration);
 
-                // Get data using a custom service class (contains caching)
+                // Get data using a custom service (contains caching). You could also use dependency injection for this.
                 var dataService = new DataService(_memoryCache, cacheDuration);
                 var data = dataService.GetData();
 
