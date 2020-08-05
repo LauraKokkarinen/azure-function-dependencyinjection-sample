@@ -26,8 +26,7 @@ namespace AzureFunctionsMemoryCache
             // If you also want to refresh the cache every 15 minutes, you can do that here (example below)
             try
             {
-                int.TryParse(_configuration["CacheDurationMinutes"], out int cacheDuration);
-                var dataService = new DataService(_memoryCache, cacheDuration);
+                var dataService = new DataService(_memoryCache, _configuration);
                 dataService.GetAndCacheData();
 
                 // Alternatively, you can create an another function that does the caching and trigger it with a HTTP request (store the URL in the app settings)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 
 namespace AzureFunctionsMemoryCache.Services
@@ -12,8 +13,11 @@ namespace AzureFunctionsMemoryCache.Services
 
         private const string CacheKeyData = "CACHE_KEY_DATA";
 
-        public DataService(IMemoryCache memoryCache, int cacheDuration = 0)
+        public DataService(IMemoryCache memoryCache, IConfiguration configuration)
         {
+            // If you want, you can specify and get the cache duration from app settings
+            int.TryParse(configuration["CacheDurationMinutes"], out int cacheDuration);
+
             _cache = memoryCache;
             _cacheDuration = cacheDuration;
         }

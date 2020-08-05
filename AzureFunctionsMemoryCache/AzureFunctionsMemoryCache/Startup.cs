@@ -1,6 +1,7 @@
-﻿using AzureFunctionsMemoryCache.Services;
-using Microsoft.Azure.Functions.Extensions.DependencyInjection;
+﻿using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
+
+[assembly: FunctionsStartup(typeof(AzureFunctionsMemoryCache.Startup))]
 
 namespace AzureFunctionsMemoryCache
 {

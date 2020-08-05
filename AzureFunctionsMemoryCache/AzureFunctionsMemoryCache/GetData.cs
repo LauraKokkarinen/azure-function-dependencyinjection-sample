@@ -31,11 +31,8 @@ namespace AzureFunctionsMemoryCache
                 // If you are using Azure AD authentication on your Functions app, you can use the ClaimsPrincipal object to check the currently logged in user's permissions 
                 string currentUserPrincipalName = currentUser.Identity.Name;
 
-                // If you want, you can specify and get the cache duration from app settings
-                int.TryParse(_configuration["CacheDurationMinutes"], out int cacheDuration);
-
                 // Get data using a custom service (contains caching). You could also use dependency injection for this.
-                var dataService = new DataService(_memoryCache, cacheDuration);
+                var dataService = new DataService(_memoryCache, _configuration);
                 var data = dataService.GetData();
 
                 return new ObjectResult(JsonConvert.SerializeObject(data)) { StatusCode = 200 };
