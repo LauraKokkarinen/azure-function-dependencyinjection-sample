@@ -1,63 +1,45 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Configuration;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace AzureFunctionsDependencyInjection.Services
 {
     public class DataService : IDataService
     {
-        private readonly IMemoryCache _cache;
-        private readonly int _cacheDuration;
+        private readonly BlobCache _blobCache;
 
         private const string CacheKeyData = "CACHE_KEY_DATA";
 
-        public DataService(IMemoryCache memoryCache, IConfiguration configuration)
+        public DataService(string storageAccountConnectionString, string blobContainerName)
         {
-            // If you want, you can specify and get the cache duration from app settings
-            int.TryParse(configuration["CacheDurationMinutes"], out int cacheDuration);
-
-            _cache = memoryCache;
-            _cacheDuration = cacheDuration;
+            _blobCache = new BlobCache(storageAccountConnectionString, blobContainerName);
         }
 
-        public IEnumerable<JToken> GetData()
+        public async Task<IEnumerable<JToken>> GetDataAsync()
         {
-            return GetCachedData() ?? GetAndCacheData();
+            return await GetCachedDataAsync() ?? await GetAndCacheDataAsync();
         }
 
-        public IEnumerable<JToken> GetCachedData()
+        private async Task<IEnumerable<JToken>> GetCachedDataAsync()
         {
-            _cache.TryGetValue(CacheKeyData, out IEnumerable<JToken> data);
+            string content = await _blobCache.GetBlobContentAsync(CacheKeyData);
 
-            return data;
+            return content != null ? (IEnumerable<JToken>)JsonConvert.DeserializeObject(content) : null;
         }
 
-        public IEnumerable<JToken> GetAndCacheData()
+        public async Task<IEnumerable<JToken>> GetAndCacheDataAsync()
         {
             var data = new List<JToken>(); // Get your data from the actual data source here
 
-            CacheData(data);
+            await CacheData(data);
 
             return data;
         }
 
-        public void CacheData(IEnumerable<JToken> data)
+        private async Task CacheData(IEnumerable<JToken> teams)
         {
-            if (_cacheDuration == 0)
-            {
-                _cache.Remove(CacheKeyData);
-            }
-            else
-            {
-                var options = new MemoryCacheEntryOptions
-                {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(_cacheDuration)
-                };
-
-                _cache.Set(CacheKeyData, data, options);
-            }
+            await _blobCache.SetBlobContentAsync(CacheKeyData, JsonConvert.SerializeObject(teams));
         }
     }
 }

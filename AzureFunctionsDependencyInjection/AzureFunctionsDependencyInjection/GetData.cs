@@ -22,13 +22,18 @@ namespace AzureFunctionsDependencyInjection
         [FunctionName("GetData")]
         public IActionResult Run([HttpTrigger(AuthorizationLevel.Anonymous, "GET", Route = null)] HttpRequest req, ClaimsPrincipal currentUser, ILogger log)
         {
+            if (req.Query.ContainsKey("warmup"))
+            {
+                return new ObjectResult(null) { StatusCode = 204 };
+            }
+
             try
             {
                 // If you are using Azure AD authentication on your Functions app, you can use the ClaimsPrincipal object to check the currently logged in user's permissions 
                 string currentUserPrincipalName = currentUser.Identity.Name;
 
                 // Get data using a custom service (contains caching)
-                var data = _dataService.GetData();
+                var data = _dataService.GetDataAsync();
 
                 return new ObjectResult(JsonConvert.SerializeObject(data)) { StatusCode = 200 };
             }

@@ -1,36 +1,36 @@
 ﻿using System;
-using AzureFunctionsDependencyInjection.Services;
 using Microsoft.Azure.WebJobs;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace AzureFunctionsDependencyInjection
 {
     public class Warmup
     {
-        private readonly IDataService _dataService;
+        private readonly IConfiguration _configuration;
 
-        public Warmup(IDataService dataService)
+        public Warmup(IConfiguration configuration)
         {
-            _dataService = dataService;
+            _configuration = configuration;
         }
 
         // The function app goes to sleep after 20 minutes of inactivity, trigger with a shorter interval to keep it awake.
         [FunctionName("Warmup")]
         public void Run([TimerTrigger("0 */15 * * * *")] TimerInfo myTimer, ILogger log) 
         {
-            // Triggering one function in the Functions app is enough to keep all of them warm.
-            log.LogInformation($"Successfully warmed up functions.");
+            var urls = _configuration["FunctionUrls"].Split(';');
 
-            // If you also want to refresh the cache every 15 minutes, you can do that here (example below)
-            try
+            foreach (string url in urls)
             {
-                _dataService.GetAndCacheData();
-
-                // Alternatively, you can create an another function that does the caching and trigger it with a HTTP request (store the URL in the app settings)
-            }
-            catch (Exception e)
-            {
-                log.LogError($"Failed to refresh cache: {e.Message}");
+                try
+                {
+                    // TODO: Auth and make a GET request to each of the function URLs with a query string param ?warmup=true
+                    log.LogInformation($"Successfully warmed up a function at {url}");
+                }
+                catch (Exception e)
+                {
+                    log.LogError($"Failed to warmup a function at {url}. {e.Message}");
+                }
             }
         }
     }

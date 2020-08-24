@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30320.27
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureFunctionsDependencyInjection", "AzureFunctionsDependencyInjection\AzureFunctionsDependencyInjection.csproj", "{49B3815E-1C62-4CEA-9287-16F2720F70A5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureFunctionsDependencyInjection", "AzureFunctionsDependencyInjection\AzureFunctionsDependencyInjection.csproj", "{49B3815E-1C62-4CEA-9287-16F2720F70A5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -10,8 +10,8 @@ namespace AzureFunctionsDependencyInjection
     {
         public override void Configure(IFunctionsHostBuilder builder)
         {
-            builder.Services.AddMemoryCache(); // Add memory cache to your app
-            builder.Services.AddSingleton<IDataService, DataService>(); // Add your custom service
+            builder.Services.AddSingleton<IDataService, DataService>(); // Add custom data fetching service
+            builder.Services.AddSingleton<IBlobCache, BlobCache>(); // Add custom blob caching service
         }
     }
 }
