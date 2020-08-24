@@ -7,13 +7,13 @@ namespace AzureFunctionsDependencyInjection.Services
 {
     public class DataService : IDataService
     {
-        private readonly BlobCache _blobCache;
+        private readonly IBlobCache _blobCache;
 
         private const string CacheKeyData = "CACHE_KEY_DATA";
 
-        public DataService(string storageAccountConnectionString, string blobContainerName)
+        public DataService(IBlobCache blobCache)
         {
-            _blobCache = new BlobCache(storageAccountConnectionString, blobContainerName);
+            _blobCache = blobCache;
         }
 
         public async Task<IEnumerable<JToken>> GetDataAsync()
@@ -37,9 +37,9 @@ namespace AzureFunctionsDependencyInjection.Services
             return data;
         }
 
-        private async Task CacheData(IEnumerable<JToken> teams)
+        private async Task CacheData(IEnumerable<JToken> data)
         {
-            await _blobCache.SetBlobContentAsync(CacheKeyData, JsonConvert.SerializeObject(teams));
+            await _blobCache.SetBlobContentAsync(CacheKeyData, JsonConvert.SerializeObject(data));
         }
     }
 }

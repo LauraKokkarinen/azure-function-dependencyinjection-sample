@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 
@@ -10,11 +11,10 @@ namespace AzureFunctionsDependencyInjection.Services
     {
         private readonly CloudBlobContainer _container;
 
-        public BlobCache(string storageAccountConnectionString, string blobContainerName)
+        public BlobCache(IConfiguration configuration)
         {
-            _container = GetContainer(storageAccountConnectionString, blobContainerName);
+            _container = GetContainer(configuration["StorageAccountConnectionString"], configuration["BlobContainerName"]);
         }
-
 
         private CloudBlobContainer GetContainer(string storageAccountConnectionString, string blobContainerNAme)
         {

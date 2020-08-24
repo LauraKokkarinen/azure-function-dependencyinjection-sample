@@ -7,6 +7,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System.Threading.Tasks;
 
 namespace AzureFunctionsDependencyInjection
 {
@@ -20,7 +21,7 @@ namespace AzureFunctionsDependencyInjection
         }
 
         [FunctionName("GetData")]
-        public IActionResult Run([HttpTrigger(AuthorizationLevel.Anonymous, "GET", Route = null)] HttpRequest req, ClaimsPrincipal currentUser, ILogger log)
+        public async Task<IActionResult> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "GET", Route = null)] HttpRequest req, ClaimsPrincipal currentUser, ILogger log)
         {
             if (req.Query.ContainsKey("warmup"))
             {
@@ -33,7 +34,7 @@ namespace AzureFunctionsDependencyInjection
                 string currentUserPrincipalName = currentUser.Identity.Name;
 
                 // Get data using a custom service (contains caching)
-                var data = _dataService.GetDataAsync();
+                var data = await _dataService.GetDataAsync();
 
                 return new ObjectResult(JsonConvert.SerializeObject(data)) { StatusCode = 200 };
             }
