@@ -1,1 +1,1 @@
-# laurak-samples
+# azure-function-dependencyinjection-sample
